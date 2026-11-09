@@ -3,7 +3,8 @@
 - [x] Start from Starling Android rather than the desktop-only Elyhorizon fork.
 - [x] Add a dedicated `horizon-ios` Rust package.
 - [x] Add an idempotent Rust lifecycle ABI boundary.
-- [ ] Add Xcode host project and `MTKView`.
+- [x] Add Codemagic workflow, Rust iOS build script, and XcodeGen project spec.
+- [x] Add Swift Xcode host and `MTKView` surface scaffold.
 - [ ] Build the iOS target on macOS and resolve target-specific dependencies.
 - [ ] Connect Metal presentation and resize/orientation handling.
 - [ ] Feed UIKit touch events into Horizon's shared touch controls.

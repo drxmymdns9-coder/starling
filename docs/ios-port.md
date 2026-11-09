@@ -6,6 +6,8 @@ This branch starts from the Starling Android port because it already contains th
 
 - Added `crates/horizon-ios`, a dedicated Rust host package.
 - Added an iOS ABI boundary in `crates/horizon-client/src/ios_main.rs`.
+- Added `codemagic.yaml`, an XcodeGen spec, and a Rust iOS build script for Codemagic.
+- Added a Swift `MTKView` host that exercises the Rust lifecycle bridge.
 - Kept Android and desktop entry points unchanged.
 - Added no fake iOS build claim: the host still needs Xcode and a real iOS device for compilation and validation.
 
@@ -19,6 +21,10 @@ This branch starts from the Starling Android port because it already contains th
 6. Reuse Starling's resource preparation/download flow without shipping Mojang assets in the app.
 7. Add device tiers, memory budgets, crash reports, and an IPA build script for sideloading.
 8. Reapply Ely.by authentication from Elyhorizon after the base Horizon client is playable on iOS.
+
+## Codemagic setup
+
+The workflow is `ios-sideload`. Before starting a signed build, change `BUNDLE_ID` in `codemagic.yaml` to an App ID registered in the Apple Developer account connected to Codemagic. Upload a development certificate and a provisioning profile containing the test iPhone, then start the workflow. The workflow builds the Rust static library, generates the Xcode project, applies the profile with `xcode-project use-profiles`, and produces an IPA artifact.
 
 ## Important constraint
 
