@@ -1,0 +1,25 @@
+[package]
+name = "horizon-ios"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "iOS host bridge for the Horizon mobile client"
+
+[lib]
+path = "../horizon-client/src/ios_main.rs"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+horizon-client = { path = "../horizon-client", default-features = false }
+horizon-client-render = { path = "../horizon-client-render" }
+horizon-client-input = { path = "../horizon-client-input" }
+horizon-hdr = { path = "../horizon-hdr" }
+log = "0.4"
+
+[features]
+default = ["audio"]
+audio = ["horizon-client/audio"]
+
+[lints]
+workspace = true
