@@ -1,15 +1,12 @@
 workflows:
-  ios-sideload:
-    name: Horizon iOS sideload
+  ios-unsigned:
+    name: Horizon iOS unsigned IPA
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
       xcode: latest
       vars:
         BUNDLE_ID: com.example.horizonios
-      ios_signing:
-        distribution_type: development
-        bundle_identifier: $BUNDLE_ID
     scripts:
       - name: Install Rust and XcodeGen
         script: |
@@ -29,16 +26,25 @@ workflows:
         script: |
           set -euo pipefail
           xcodegen generate --spec ios/project.yml
-      - name: Apply Codemagic signing profiles
+      - name: Build unsigned iOS app
         script: |
           set -euo pipefail
-          xcode-project use-profiles
-      - name: Build IPA
-        script: |
-          set -euo pipefail
-          xcode-project build-ipa \
-            --project "$CM_BUILD_DIR/ios/HorizonIOS.xcodeproj" \
-            --scheme HorizonIOS
+          rm -rf build/ios/derived build/ios/ipa build/ios/Payload
+          mkdir -p build/ios/ipa build/ios/Payload
+          xcodebuild \
+            -project "$CM_BUILD_DIR/ios/HorizonIOS.xcodeproj" \
+            -scheme HorizonIOS \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath "$CM_BUILD_DIR/build/ios/derived" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            DEVELOPMENT_TEAM= \
+            build
+          APP_PATH="$CM_BUILD_DIR/build/ios/derived/Build/Products/Release-iphoneos/Horizon.app"
+          test -d "$APP_PATH"
+          cp -R "$APP_PATH" build/ios/Payload/Horizon.app
+          (cd build/ios && zip -qry ipa/Horizon-unsigned.ipa Payload)
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log

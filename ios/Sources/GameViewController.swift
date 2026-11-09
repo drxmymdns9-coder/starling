@@ -38,4 +38,35 @@ final class GameViewController: UIViewController {
         HorizonBridge.shared.stop()
         super.viewWillDisappear(animated)
     }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches { forward(touch, phase: .began) }
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches { forward(touch, phase: .moved) }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches { forward(touch, phase: .ended) }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches { forward(touch, phase: .cancelled) }
+    }
+
+    private enum TouchPhase { case began, moved, ended, cancelled }
+
+    private func forward(_ touch: UITouch, phase: TouchPhase) {
+        let point = touch.location(in: view)
+        let scale = view.window?.screen.nativeScale ?? 1
+        let x = Float(point.x * scale)
+        let y = Float(point.y * scale)
+        let id = UInt64(bitPattern: Int64(ObjectIdentifier(touch).hashValue))
+        switch phase {
+        case .began: HorizonBridge.shared.touchBegan(id: id, x: x, y: y)
+        case .moved: HorizonBridge.shared.touchMoved(id: id, x: x, y: y)
+        case .ended, .cancelled: HorizonBridge.shared.touchEnded(id: id, x: x, y: y)
+        }
+    }
 }

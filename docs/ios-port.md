@@ -24,7 +24,7 @@ This branch starts from the Starling Android port because it already contains th
 
 ## Codemagic setup
 
-The workflow is `ios-sideload`. Before starting a signed build, change `BUNDLE_ID` in `codemagic.yaml` to an App ID registered in the Apple Developer account connected to Codemagic. Upload a development certificate and a provisioning profile containing the test iPhone, then start the workflow. The workflow builds the Rust static library, generates the Xcode project, applies the profile with `xcode-project use-profiles`, and produces an IPA artifact.
+The workflow is `ios-unsigned`. It deliberately does not configure `ios_signing`, does not call `xcode-project use-profiles`, and builds with `CODE_SIGNING_ALLOWED=NO` and `CODE_SIGNING_REQUIRED=NO`. It packages the resulting `.app` as `build/ios/ipa/Horizon-unsigned.ipa`. The IPA is intended for the user's own signing/repackaging workflow; Codemagic does not need an Apple certificate or provisioning profile for this build.
 
 ## Important constraint
 
